@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/*
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBAddress;
 import com.mongodb.DBCollection;
@@ -26,6 +27,8 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoOptions;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
+*/
+import com.mongodb.*;
 import com.yahoo.ycsb.ByteArrayByteIterator;
 import com.yahoo.ycsb.ByteIterator;
 import com.yahoo.ycsb.DB;
@@ -33,12 +36,12 @@ import com.yahoo.ycsb.DBException;
 
 /**
  * MongoDB client for YCSB framework.
- * 
+ *
  * Properties to set:
- * 
+ *
  * mongodb.url=mongodb://localhost:27017 mongodb.database=ycsb
  * mongodb.writeConcern=normal
- * 
+ *
  * @author ypai
  */
 public class MongoDbClient extends DB {
@@ -73,7 +76,7 @@ public class MongoDbClient extends DB {
             // initialize MongoDb driver
             Properties props = getProperties();
             String url = props.getProperty("mongodb.url",
-                    "mongodb://localhost:27017");
+                    "mongodb://localhost:27018");
             database = props.getProperty("mongodb.database", "ycsb");
             String writeConcernType = props.getProperty("mongodb.writeConcern",
                     "safe").toLowerCase();
@@ -105,21 +108,32 @@ public class MongoDbClient extends DB {
             }
 
             try {
-                // strip out prefix since Java driver doesn't currently support
-                // standard connection format URL yet
-                // http://www.mongodb.org/display/DOCS/Connections
-                if (url.startsWith("mongodb://")) {
-                    url = url.substring(10);
-                }
-
                 // need to append db to url.
-                url += "/" + database;
-                System.out.println("new database url = " + url);
                 MongoOptions options = new MongoOptions();
                 options.connectionsPerHost = Integer.parseInt(maxConnections);
-                mongo = new Mongo(new DBAddress(url), options);
 
-                System.out.println("mongo connection created with " + url);
+                if (url.contains(",")) {
+                    if (!url.startsWith("mongodb://")) {
+                        url = "mongodb://" + url;
+                    }
+                    //mongo = new Mongo(new MongoURI(url), options);
+                    mongo = new Mongo(new MongoURI(url));
+                    mongo.setWriteConcern(writeConcern);
+                    mongo.setReadPreference(ReadPreference.secondaryPreferred());
+                    System.out.println("mongo connection created with replica_set " + url);
+                }
+                else {
+                    // strip out prefix since Java driver doesn't currently support
+                    // standard connection format URL yet
+                    // http://www.mongodb.org/display/DOCS/Connections
+                    if (url.startsWith("mongodb://")) {
+                        url = url.substring(10);
+                    }
+                    url += "/" + database;
+                    System.out.println("new database url = " + url);
+                    mongo = new Mongo(new DBAddress(url), options);
+                    System.out.println("mongo connection created with " + url);
+                }
             }
             catch (Exception e1) {
                 System.err
@@ -360,7 +374,7 @@ public class MongoDbClient extends DB {
 
     /**
      * TODO - Finish
-     * 
+     *
      * @param resultMap
      * @param obj
      */
