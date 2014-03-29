@@ -3,3 +3,5 @@ target
 
 # ignore output files from testing
 output*
+out.txt
+err.txt
