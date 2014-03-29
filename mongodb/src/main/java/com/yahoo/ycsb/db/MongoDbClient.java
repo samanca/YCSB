@@ -119,7 +119,7 @@ public class MongoDbClient extends DB {
                     //mongo = new Mongo(new MongoURI(url), options);
                     mongo = new Mongo(new MongoURI(url));
                     mongo.setWriteConcern(writeConcern);
-                    mongo.setReadPreference(ReadPreference.secondaryPreferred());
+                    mongo.setReadPreference(ReadPreference.primary());
                     System.out.println("mongo connection created with replica_set " + url);
                 }
                 else {
@@ -269,6 +269,12 @@ public class MongoDbClient extends DB {
                 result.putAll(queryResult.toMap());
             }
             return queryResult != null ? 0 : 1;
+        }
+        catch (com.mongodb.MongoException ex) {
+            if (ex.getCode() == -3)
+                return 2; // differentiate between connection failure and other issues
+            else
+                return 1;
         }
         catch (Exception e) {
             System.err.println(e.toString());
