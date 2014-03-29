@@ -182,6 +182,12 @@ public class MongoDbClient extends DB {
             WriteResult res = collection.remove(q, writeConcern);
             return res.getN() == 1 ? 0 : 1;
         }
+        catch (com.mongodb.MongoException ex) {
+            if (ex.getCode() == -3)
+                return 2;
+            else
+                return 1;
+        }
         catch (Exception e) {
             System.err.println(e.toString());
             return 1;
@@ -319,6 +325,12 @@ public class MongoDbClient extends DB {
             WriteResult res = collection.update(q, u, false, false,
                     writeConcern);
             return res.getN() == 1 ? 0 : 1;
+        }
+        catch (com.mongodb.MongoException ex) {
+            if (ex.getCode() == -3)
+                return 2; // differentiate between connection failure and other issues
+            else
+                return 1;
         }
         catch (Exception e) {
             System.err.println(e.toString());

@@ -1,18 +1,18 @@
-/**                                                                                                                                                                                
- * Copyright (c) 2010 Yahoo! Inc. All rights reserved.                                                                                                                             
- *                                                                                                                                                                                 
- * Licensed under the Apache License, Version 2.0 (the "License"); you                                                                                                             
- * may not use this file except in compliance with the License. You                                                                                                                
- * may obtain a copy of the License at                                                                                                                                             
- *                                                                                                                                                                                 
- * http://www.apache.org/licenses/LICENSE-2.0                                                                                                                                      
- *                                                                                                                                                                                 
- * Unless required by applicable law or agreed to in writing, software                                                                                                             
- * distributed under the License is distributed on an "AS IS" BASIS,                                                                                                               
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or                                                                                                                 
- * implied. See the License for the specific language governing                                                                                                                    
- * permissions and limitations under the License. See accompanying                                                                                                                 
- * LICENSE file.                                                                                                                                                                   
+/**
+ * Copyright (c) 2010 Yahoo! Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
  */
 
 package com.yahoo.ycsb;
@@ -29,7 +29,37 @@ import com.yahoo.ycsb.measurements.Measurements;
  */
 public class DBWrapper extends DB
 {
-	DB _db;
+    /**
+     * Amount of time, in milliseconds, to wait before issuing a retry
+     */
+    private static final long RETRY_WAIT_DELAY = 5;
+
+    /**
+     * Holds the time that a failure is discovered
+     */
+    private static long FAILURE_DETECTED=0;
+
+    /**
+     * Call this method to report a failure
+     */
+    private static final void isDown() {
+        if (FAILURE_DETECTED == 0) {
+            FAILURE_DETECTED = System.currentTimeMillis();
+            System.out.println("Failure reported!");
+        }
+    }
+
+    /**
+     * Call this method to report a successful execution
+     */
+    private static final void isUp() {
+        if (FAILURE_DETECTED > 0) {
+            System.out.println("Down time = " + (System.currentTimeMillis() - FAILURE_DETECTED) + " msec");
+            FAILURE_DETECTED = 0;
+        }
+    }
+
+    DB _db;
 	Measurements _measurements;
 
 	public DBWrapper(DB db)
@@ -87,7 +117,13 @@ public class DBWrapper extends DB
 	public int read(String table, String key, Set<String> fields, HashMap<String,ByteIterator> result)
 	{
 		long st=System.nanoTime();
-		int res=_db.read(table,key,fields,result);
+		int res;
+        while ((res = _db.read(table,key,fields,result)) == 2) {
+            isDown();
+            try { Thread.sleep(RETRY_WAIT_DELAY); }
+            catch(InterruptedException ex) {}
+        }
+        isUp();
 		long en=System.nanoTime();
 		_measurements.measure("READ",(int)((en-st)/1000));
 		_measurements.reportReturnCode("READ",res);
@@ -107,13 +143,19 @@ public class DBWrapper extends DB
 	public int scan(String table, String startkey, int recordcount, Set<String> fields, Vector<HashMap<String,ByteIterator>> result)
 	{
 		long st=System.nanoTime();
-		int res=_db.scan(table,startkey,recordcount,fields,result);
+		int res;
+        while (( res = _db.scan(table,startkey,recordcount,fields,result)) == 1) {
+            isDown();
+            try { Thread.sleep(RETRY_WAIT_DELAY); }
+            catch(InterruptedException ex) {}
+        }
+        isUp();
 		long en=System.nanoTime();
 		_measurements.measure("SCAN",(int)((en-st)/1000));
 		_measurements.reportReturnCode("SCAN",res);
 		return res;
 	}
-	
+
 	/**
 	 * Update a record in the database. Any field/value pairs in the specified values HashMap will be written into the record with the specified
 	 * record key, overwriting any existing values with the same field name.
@@ -126,7 +168,13 @@ public class DBWrapper extends DB
 	public int update(String table, String key, HashMap<String,ByteIterator> values)
 	{
 		long st=System.nanoTime();
-		int res=_db.update(table,key,values);
+		int res;
+        while ((res = _db.update(table,key,values)) == 2) {
+            isDown();
+            try { Thread.sleep(RETRY_WAIT_DELAY); }
+            catch(InterruptedException ex) {}
+        }
+        isUp();
 		long en=System.nanoTime();
 		_measurements.measure("UPDATE",(int)((en-st)/1000));
 		_measurements.reportReturnCode("UPDATE",res);
@@ -145,7 +193,13 @@ public class DBWrapper extends DB
 	public int insert(String table, String key, HashMap<String,ByteIterator> values)
 	{
 		long st=System.nanoTime();
-		int res=_db.insert(table,key,values);
+		int res;
+        while ((res = _db.insert(table,key,values)) == 1) {
+            isDown();
+            try { Thread.sleep(RETRY_WAIT_DELAY); }
+            catch (InterruptedException ex) {}
+        }
+        isUp();
 		long en=System.nanoTime();
 		_measurements.measure("INSERT",(int)((en-st)/1000));
 		_measurements.reportReturnCode("INSERT",res);
@@ -153,7 +207,7 @@ public class DBWrapper extends DB
 	}
 
 	/**
-	 * Delete a record from the database. 
+	 * Delete a record from the database.
 	 *
 	 * @param table The name of the table
 	 * @param key The record key of the record to delete.
@@ -162,7 +216,13 @@ public class DBWrapper extends DB
 	public int delete(String table, String key)
 	{
 		long st=System.nanoTime();
-		int res=_db.delete(table,key);
+		int res;
+        while ((res = _db.delete(table,key)) == 2) {
+            isDown();
+            try { Thread.sleep(RETRY_WAIT_DELAY); }
+            catch(InterruptedException ex) {}
+        }
+        isUp();
 		long en=System.nanoTime();
 		_measurements.measure("DELETE",(int)((en-st)/1000));
 		_measurements.reportReturnCode("DELETE",res);
