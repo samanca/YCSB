@@ -1,18 +1,18 @@
-/**                                                                                                                                                                                
- * Copyright (c) 2010 Yahoo! Inc. All rights reserved.                                                                                                                             
- *                                                                                                                                                                                 
- * Licensed under the Apache License, Version 2.0 (the "License"); you                                                                                                             
- * may not use this file except in compliance with the License. You                                                                                                                
- * may obtain a copy of the License at                                                                                                                                             
- *                                                                                                                                                                                 
- * http://www.apache.org/licenses/LICENSE-2.0                                                                                                                                      
- *                                                                                                                                                                                 
- * Unless required by applicable law or agreed to in writing, software                                                                                                             
- * distributed under the License is distributed on an "AS IS" BASIS,                                                                                                               
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or                                                                                                                 
- * implied. See the License for the specific language governing                                                                                                                    
- * permissions and limitations under the License. See accompanying                                                                                                                 
- * LICENSE file.                                                                                                                                                                   
+/**
+ * Copyright (c) 2010 Yahoo! Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
  */
 
 package com.yahoo.ycsb.measurements;
@@ -27,7 +27,7 @@ import com.yahoo.ycsb.measurements.exporter.MeasurementsExporter;
 
 /**
  * Take measurements and maintain a histogram of a given metric, such as READ LATENCY.
- * 
+ *
  * @author cooperb
  *
  */
@@ -41,11 +41,11 @@ public class OneMeasurementHistogram extends OneMeasurement
 	int histogramoverflow;
 	int operations;
 	long totallatency;
-	
+
 	//keep a windowed version of these stats for printing status
 	int windowoperations;
 	long windowtotallatency;
-	
+
 	int min;
 	int max;
 	HashMap<Integer,int[]> returncodes;
@@ -115,10 +115,10 @@ public class OneMeasurementHistogram extends OneMeasurement
   public void exportMeasurements(MeasurementsExporter exporter) throws IOException
   {
     exporter.write(getName(), "Operations", operations);
-    exporter.write(getName(), "AverageLatency(us)", (((double)totallatency)/((double)operations)));
-    exporter.write(getName(), "MinLatency(us)", min);
-    exporter.write(getName(), "MaxLatency(us)", max);
-    
+    exporter.write(getName(), "AverageLatency(ns)", (((double)totallatency)/((double)operations)));
+    exporter.write(getName(), "MinLatency(ns)", min);
+    exporter.write(getName(), "MaxLatency(ns)", max);
+
     int opcounter=0;
     boolean done95th=false;
     for (int i=0; i<_buckets; i++)
@@ -140,7 +140,7 @@ public class OneMeasurementHistogram extends OneMeasurement
     {
       int[] val=returncodes.get(I);
       exporter.write(getName(), "Return="+I, val[0]);
-    }     
+    }
 
     for (int i=0; i<_buckets; i++)
     {
@@ -159,7 +159,7 @@ public class OneMeasurementHistogram extends OneMeasurement
 		double report=((double)windowtotallatency)/((double)windowoperations);
 		windowtotallatency=0;
 		windowoperations=0;
-		return "["+getName()+" AverageLatency(us)="+d.format(report)+"]";
+		return "["+getName()+" AverageLatency(ns)="+d.format(report)+"]";
 	}
 
 }

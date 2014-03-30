@@ -102,7 +102,8 @@ public class DBWrapper extends DB
     long st=System.nanoTime();
 		_db.cleanup();
     long en=System.nanoTime();
-    _measurements.measure("CLEANUP", (int)((en-st)/1000));
+    //_measurements.measure("CLEANUP", (int)((en-st)/1000));
+    _measurements.measure("CLEANUP", (int)(en-st));
 	}
 
 	/**
@@ -125,7 +126,8 @@ public class DBWrapper extends DB
         }
         isUp();
 		long en=System.nanoTime();
-		_measurements.measure("READ",(int)((en-st)/1000));
+		//_measurements.measure("READ",(int)((en-st)/1000));
+		_measurements.measure("READ",(int)(en-st));
 		_measurements.reportReturnCode("READ",res);
 		return res;
 	}
@@ -151,7 +153,8 @@ public class DBWrapper extends DB
         }
         isUp();
 		long en=System.nanoTime();
-		_measurements.measure("SCAN",(int)((en-st)/1000));
+		//_measurements.measure("SCAN",(int)((en-st)/1000));
+		_measurements.measure("SCAN",(int)(en-st));
 		_measurements.reportReturnCode("SCAN",res);
 		return res;
 	}
@@ -176,7 +179,8 @@ public class DBWrapper extends DB
         }
         isUp();
 		long en=System.nanoTime();
-		_measurements.measure("UPDATE",(int)((en-st)/1000));
+		//_measurements.measure("UPDATE",(int)((en-st)/1000));
+		_measurements.measure("UPDATE",(int)(en-st));
 		_measurements.reportReturnCode("UPDATE",res);
 		return res;
 	}
@@ -201,7 +205,8 @@ public class DBWrapper extends DB
         }
         isUp();
 		long en=System.nanoTime();
-		_measurements.measure("INSERT",(int)((en-st)/1000));
+		//_measurements.measure("INSERT",(int)((en-st)/1000));
+		_measurements.measure("INSERT",(int)(en-st));
 		_measurements.reportReturnCode("INSERT",res);
 		return res;
 	}
@@ -224,7 +229,8 @@ public class DBWrapper extends DB
         }
         isUp();
 		long en=System.nanoTime();
-		_measurements.measure("DELETE",(int)((en-st)/1000));
+		//_measurements.measure("DELETE",(int)((en-st)/1000));
+		_measurements.measure("DELETE",(int)(en-st));
 		_measurements.reportReturnCode("DELETE",res);
 		return res;
 	}
