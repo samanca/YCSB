@@ -3,5 +3,6 @@ target
 
 # ignore output files from testing
 output*
-out.txt
+histogram_*.txt
+timeseries_*.txt
 err.txt
