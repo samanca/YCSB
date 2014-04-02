@@ -2,7 +2,7 @@
 if [ ! -z $1 ]; then
     WL=$1
 else
-    WL="workloads/insert_only"
+    WL="workloads/workloada"
 fi
 
 if [ ! -z $2 ]; then
@@ -11,14 +11,14 @@ else
     DB="test"
 fi
 
-if [ ! -z $3 ]; then
-    WrConc=$3
+if [ ! -z $4 ]; then
+    WrConc=$4
 else
     WrConc="safe"
 fi
 
-if [ ! -z $4 ]; then
-    $THREADS=$4
+if [ ! -z $5 ]; then
+    $THREADS=$5
 else
     $THREADS=1
 fi
