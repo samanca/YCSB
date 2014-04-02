@@ -18,9 +18,9 @@ else
 fi
 
 if [ ! -z $5 ]; then
-    $THREADS=$5
+    THREADS=$5
 else
-    $THREADS=1
+    THREADS=1
 fi
 
 if [ ! -z $3 ] && [ "$3" = "single" ]; then
