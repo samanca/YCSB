@@ -1,3 +1,4 @@
+# INSERT-ONLY WORKLOAD (4K)
 operationcount=1000000
 recordcount=0
 workload=com.yahoo.ycsb.workloads.CoreWorkload
@@ -12,6 +13,6 @@ insertproportion=1.0
 requestdistribution=uniform
 
 fieldcount: 10
-fieldlength: 100
+fieldlength: 400
 insertorder: hashed
 table: tbl_test

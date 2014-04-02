@@ -1,3 +1,4 @@
+# INSERT-ONLY WORKLOAD (1K)
 operationcount=1000000
 recordcount=0
 workload=com.yahoo.ycsb.workloads.CoreWorkload
