@@ -107,6 +107,9 @@ public class MongoDbClient extends DB {
             else if ("replica_acknowledged".equals(writeConcernType)) {
                 writeConcern = WriteConcern.REPLICA_ACKNOWLEDGED;
             }
+            else if ("journaled".equals(writeConcernType)) {
+                writeConcern = WriteConcern.JOURNALED;
+            }
             else if ("majority".equals(writeConcernType)) {
                 writeConcern = WriteConcern.MAJORITY;
             }
