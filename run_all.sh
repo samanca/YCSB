@@ -34,11 +34,12 @@ do
         continue
     fi
     echo "----------------------- Starting $WRCON -----------------------"
-    for L in a b c d e f g h
+    #for L in a b c d e f g h
+    for L in a b c d e f
     do
-        if [ "$THC" -gt 1 ]; then
-            continue
-        fi
+        #if [ "$THC" -gt 1 ] && [ "$L" == "g"]; then
+        #    continue
+        #fi
         sleep 10s
         WORKLOAD="workloads/workload${L}"
         DB="test_${L}_${WRCON}"
