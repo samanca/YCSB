@@ -13,13 +13,11 @@ fi
 
 echo "==================== mongod --journal (x1) ==================="
 ./run_all.sh "$MODE" "$FS" "journal" 1
-echo "Press any key for x4"
-read -n 1
+sleep 10s
 
 echo "==================== mongod --journal (x4) ==================="
 ./run_all.sh "$MODE" "$FS" "journal" 4
-echo "Press any key for x16"
-read -n 1
+sleep 10s
 
 echo "==================== mongod --journal (x16) ==================="
 ./run_all.sh "$MODE" "$FS" "journal" 16
@@ -28,13 +26,11 @@ read -n 1
 
 echo "=================== mongod --nojournal (x1) =================="
 ./run_all.sh "$MODE" "$FS" "nojournal" 1
-echo "Press any key for x4"
-read -n 1
+sleep 10s
 
 echo "=================== mongod --nojournal (x4) =================="
 ./run_all.sh "$MODE" "$FS" "nojournal" 4
-echo "Press any key for x16"
-read -n 1
+sleep 10s
 
 echo "=================== mongod --nojournal (x16) =================="
 ./run_all.sh "$MODE" "$FS" "nojournal" 16
