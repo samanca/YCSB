@@ -17,6 +17,14 @@ else
     JOPT="journal"
 fi
 
+if [ ! -z $4 ]; then
+    THC=$4
+else
+    THC=1
+fi
+
+echo "------------------- $MODE - $FS - $JOPT - $THC ------------------"
+
 for WRCON in "safe" "fsync" "journaled" "acknowledged" "unacknowledged"
 do
     if [ "$JOPT" == "nojournal" ] && [ "$WRCON" == "journaled" ]; then
@@ -26,16 +34,19 @@ do
         continue
     fi
     echo "----------------------- Starting $WRCON -----------------------"
-    for L in a b c d e f
+    for L in a b c d e f g h
     do
+        if [ "$THC" -gt 1 ]; then
+            continue
+        fi
         sleep 10s
         WORKLOAD="workloads/workload${L}"
-        DB="test${L}"
-        DIRECTORY="/root/mongodb/experiments/${MODE}/${WRCON}/${FS}/${JOPT}/$L"
+        DB="test_${L}_${WRCON}"
+        DIRECTORY="/root/mongodb/experiments/${MODE}/${WRCON}/${FS}/${JOPT}/${L}_${THC}"
         if [ ! -d "$DIRECTORY" ]; then
             mkdir "$DIRECTORY"
         fi
-        ./run.sh "$WORKLOAD" "$DB" "$MODE" "$WRCON" && mv histogram_*.txt timeseries_*.txt "$DIRECTORY" && cat err.txt
+        ./run.sh "$WORKLOAD" "$DB" "$MODE" "$WRCON" "$THC" && mv histogram_*.txt timeseries_*.txt "$DIRECTORY" && cat err.txt
         echo "----------------------- TEST $L completed -----------------------"
     done
 done
