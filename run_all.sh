@@ -17,11 +17,25 @@ else
     JOPT="journal"
 fi
 
-for L in a b c d e f
+for WRCON in "safe" "fsync" "journaled" "acknowledged" "unacknowledged"
 do
-    sleep 10s
-    WORKLOAD="workloads/workload${L}"
-    DB="test${L}"
-    ./run.sh "$WORKLOAD" "$DB" "$MODE" && mv histogram_*.txt timeseries_*.txt "/root/mongodb/experiments/${MODE}/${FS}/${JOPT}/$L" && cat err.txt
-    echo "----------------------- TEST $L completed -----------------------"
+    if [ "$JOPT" == "nojournal" ] && [ "$WRCON" == "journaled" ]; then
+        continue
+    fi
+    if [ "$JOPT" == "journal" ] && [ "$WRCON" == "fsync" ]; then
+        continue
+    fi
+    echo "----------------------- Starting $WRCON -----------------------"
+    for L in a b c d e f
+    do
+        sleep 10s
+        WORKLOAD="workloads/workload${L}"
+        DB="test${L}"
+        DIRECTORY="/root/mongodb/experiments/${MODE}/${WRCON}/${FS}/${JOPT}/$L"
+        if [ ! -d "$DIRECTORY" ]; then
+            mkdir "$DIRECTORY"
+        fi
+        ./run.sh "$WORKLOAD" "$DB" "$MODE" "$WRCON" && mv histogram_*.txt timeseries_*.txt "$DIRECTORY" && cat err.txt
+        echo "----------------------- TEST $L completed -----------------------"
+    done
 done
