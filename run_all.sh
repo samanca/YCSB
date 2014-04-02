@@ -43,9 +43,7 @@ do
         WORKLOAD="workloads/workload${L}"
         DB="test_${L}_${WRCON}"
         DIRECTORY="/root/mongodb/experiments/${MODE}/${WRCON}/${FS}/${JOPT}/${L}_${THC}"
-        if [ ! -d "$DIRECTORY" ]; then
-            mkdir "$DIRECTORY"
-        fi
+        mkdir -p "$DIRECTORY"
         ./run.sh "$WORKLOAD" "$DB" "$MODE" "$WRCON" "$THC" && mv histogram_*.txt timeseries_*.txt "$DIRECTORY" && cat err.txt
         echo "----------------------- TEST $L completed -----------------------"
     done
