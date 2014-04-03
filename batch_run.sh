@@ -11,6 +11,12 @@ else
     MODE="single"
 fi
 
+# TODO support for replica-sets should be considered
+
+# start mongod with --journal
+./../mongo/mongod --dbpath=/mnt/pmfs/db --journal --fork --logpath=/root/mongodb/db.log --logappend
+
+# running tests
 echo "==================== mongod --journal (x1) ==================="
 ./run_all.sh "$MODE" "$FS" "journal" 1
 sleep 10s
@@ -21,9 +27,15 @@ sleep 10s
 
 echo "==================== mongod --journal (x16) ==================="
 ./run_all.sh "$MODE" "$FS" "journal" 16
-echo "Exit mongod and run it with --nojournal, then press any key for x1"
-read -n 1
 
+# stop running mongod instance
+./kill_mongod.sh 27017 safe
+sleep 5s
+
+# start mongod with --nojournal
+./../mongo/mongod --dbpath=/mnt/pmfs/db --nojournal --fork --logpath=/root/mongodb/db.log --logappend
+
+# running tests
 echo "=================== mongod --nojournal (x1) =================="
 ./run_all.sh "$MODE" "$FS" "nojournal" 1
 sleep 10s
@@ -34,3 +46,6 @@ sleep 10s
 
 echo "=================== mongod --nojournal (x16) =================="
 ./run_all.sh "$MODE" "$FS" "nojournal" 16
+
+# stop running mongod instance
+./kill_mongod.sh 27017 safe
