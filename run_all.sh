@@ -25,7 +25,7 @@ fi
 
 echo "------------------- $MODE - $FS - $JOPT - $THC ------------------"
 
-for WRCON in "safe" "fsync" "journaled" "acknowledged" "unacknowledged"
+for WRCON in "safe" "fsync_safe" "journaled" "acknowledged" "unacknowledged"
 do
     if [ "$JOPT" == "nojournal" ] && [ "$WRCON" == "journaled" ]; then
         continue
