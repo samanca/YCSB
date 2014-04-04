@@ -16,6 +16,9 @@ fi
 # record start time
 BEG=`date +%s`
 
+# remove db log file if exists
+rm -f /root/mongodb/db.log
+
 # start mongod with --journal
 ./../mongo/mongod --dbpath=/mnt/pmfs/db --journal --fork --logpath=/root/mongodb/db.log --logappend
 
