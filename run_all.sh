@@ -30,7 +30,7 @@ do
     if [ "$JOPT" == "nojournal" ] && [ "$WRCON" == "journaled" ]; then
         continue
     fi
-    if [ "$JOPT" == "journal" ] && [ "$WRCON" == "fsync" ]; then
+    if [ "$JOPT" == "journal" ] && [ "$WRCON" == "fsync_safe" ]; then
         continue
     fi
     echo "----------------------- Starting $WRCON -----------------------"
