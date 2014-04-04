@@ -13,6 +13,9 @@ fi
 
 # TODO support for replica-sets should be considered
 
+# record start time
+BEG=`date +%s`
+
 # start mongod with --journal
 ./../mongo/mongod --dbpath=/mnt/pmfs/db --journal --fork --logpath=/root/mongodb/db.log --logappend
 
@@ -32,6 +35,10 @@ echo "==================== mongod --journal (x16) ==================="
 ./kill_mongod.sh 27017 safe
 sleep 5s
 
+# cleaning data directory
+echo "clean up ..."
+rm -rf /mnt/pmfs/db/*
+
 # start mongod with --nojournal
 ./../mongo/mongod --dbpath=/mnt/pmfs/db --nojournal --fork --logpath=/root/mongodb/db.log --logappend
 
@@ -49,3 +56,8 @@ echo "=================== mongod --nojournal (x16) =================="
 
 # stop running mongod instance
 ./kill_mongod.sh 27017 safe
+
+# print execution time
+END=`date +%s`
+let EXECTIME="$END - $BEG"
+echo "Total execution time = ${EXECTIME}s"
