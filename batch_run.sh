@@ -35,7 +35,8 @@ echo "==================== mongod --journal (x16) ==================="
 ./run_all.sh "$MODE" "$FS" "journal" 16
 
 # stop running mongod instance
-./kill_mongod.sh 27017 safe
+pkill mongod
+#./kill_mongod.sh 27017 safe
 sleep 5s
 
 # cleaning data directory
@@ -58,7 +59,8 @@ echo "=================== mongod --nojournal (x16) =================="
 ./run_all.sh "$MODE" "$FS" "nojournal" 16
 
 # stop running mongod instance
-./kill_mongod.sh 27017 safe
+#./kill_mongod.sh 27017 safe
+pkill mongod
 
 # print execution time
 END=`date +%s`
