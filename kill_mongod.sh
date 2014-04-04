@@ -13,3 +13,4 @@ fi
 
 PRIMARY_PID=`netstat -tlpn "$PRIMARY_PORT" | grep :"$PRIMARY_PORT" | awk '{ print $7 }' | grep /mongod | awk -F\/ '{ print $1 }'`
 kill -"$SIGNAL" $PRIMARY_PID
+echo "killing mongod process: $PRIMARY_PID"
