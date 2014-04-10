@@ -23,6 +23,12 @@ else
     THC=1
 fi
 
+if [ ! -z $5 ]; then
+    HOST=$5
+else
+    HOST="localhost"
+fi
+
 echo "------------------- $MODE - $FS - $JOPT - $THC ------------------"
 
 for WRCON in "safe" "fsync_safe" "journaled" "acknowledged" "unacknowledged"
@@ -45,7 +51,7 @@ do
         DB="test_${L}_${WRCON}"
         DIRECTORY="/root/mongodb/experiments/${MODE}/${WRCON}/${FS}/${JOPT}/${L}_${THC}"
         mkdir -p "$DIRECTORY"
-        ./run.sh "$WORKLOAD" "$DB" "$MODE" "$WRCON" "$THC" && mv histogram_*.txt timeseries_*.txt "$DIRECTORY" && cat err.txt
+        ./run.sh "$WORKLOAD" "$DB" "$MODE" "$WRCON" "$THC" "$HOST" && mv histogram_*.txt timeseries_*.txt "$DIRECTORY" && cat err.txt
         echo "----------------------- TEST $L completed -----------------------"
     done
 done
