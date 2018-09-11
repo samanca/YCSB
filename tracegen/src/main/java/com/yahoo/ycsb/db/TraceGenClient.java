@@ -9,8 +9,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
-import java.io.PrintWriter;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.io.*;
 
 import com.yahoo.ycsb.ByteArrayByteIterator;
 import com.yahoo.ycsb.ByteIterator;
@@ -44,16 +44,20 @@ public class TraceGenClient extends DB {
         }
     }
 
-    private PrintWriter getPrintWriter() {
+    private synchronized PrintWriter getPrintWriter() {
         Long threadId = Thread.currentThread().getId();
         if (!traceFiles.containsKey(threadId)) {
+            int fileId = threadCount.getAndIncrement();
+            String filePath = tracePath + "." + Integer.toString(fileId);
             try {
-                int fileId = threadCount.getAndIncrement();
-                String filePath = tracePath + "." + Integer.toString(fileId);
-                traceFiles.put(threadId, new PrintWriter(filePath, "UTF-8"));
+                PrintWriter p = new PrintWriter(filePath, "UTF-8");
+                p.flush();
+                traceFiles.put(threadId, p);
             }
             catch (Exception ex) {
-                // TODO
+                System.out.println("Unable to create trace file: " + filePath);
+                System.out.println(ex.toString());
+                System.exit(1);
             }
         }
         return traceFiles.get(threadId);
@@ -61,50 +65,74 @@ public class TraceGenClient extends DB {
 
     @Override
     public int delete(String table, String key) {
+        int retVal = 0;
         PrintWriter writer = getPrintWriter();
-        if (printOpCode) writer.print("delete ");
-        writer.println(key);
-        return 0;
+        try {
+            if (printOpCode) writer.print("delete ");
+            writer.println(key);
+        }
+        catch (Exception ex) { retVal = 1; }
+        // TODO support for <table>
+        return retVal;
     }
 
     @Override
     public int insert(String table, String key,
             HashMap<String, ByteIterator> values) {
+        int retVal = 0;
         PrintWriter writer = getPrintWriter();
-        if (printOpCode) writer.print("insert ");
-        writer.println(key);
+        try {
+            if (printOpCode) writer.print("insert ");
+            writer.println(key);
+        }
+        catch (Exception ex) {
+            System.out.println("Error!");
+            retVal = 1;
+        }
         // TODO support for <table> and <values>
-        return 0;
+        return retVal;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public int read(String table, String key, Set<String> fields,
             HashMap<String, ByteIterator> result) {
+        int retVal = 0;
         PrintWriter writer = getPrintWriter();
-        if (printOpCode) writer.print("read ");
-        writer.println(key);
+        try {
+            if (printOpCode) writer.print("read ");
+            writer.println(key);
+        }
+        catch (Exception ex) { retVal = 1; }
         // TODO support for <table> and <fields>
-        return 0;
+        return retVal;
     }
 
     @Override
     public int update(String table, String key,
             HashMap<String, ByteIterator> values) {
+        int retVal = 0;
         PrintWriter writer = getPrintWriter();
-        if (printOpCode) writer.print("update ");
-        writer.println(key);
+        try {
+            if (printOpCode) writer.print("update ");
+            writer.println(key);
+        }
+        catch (Exception ex) { retVal = 1; }
         // TODO support for <table> and <values>
-        return 0;
+        return retVal;
     }
 
     @Override
     public int scan(String table, String startKey, int recordCount,
             Set<String> fields, Vector<HashMap<String, ByteIterator>> result) {
+        int retVal = 0;
         PrintWriter writer = getPrintWriter();
-        if (printOpCode) writer.print("scan ");
-        writer.println(startKey);
+        try {
+            if (printOpCode) writer.print("scan ");
+            writer.println(startKey);
+        }
+        catch (Exception ex) { retVal = 1; }
         // TODO support for <table>, <recordCount> and <fields>
-        return 0;
+        return retVal;
     }
 }
